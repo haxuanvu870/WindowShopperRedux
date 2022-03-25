@@ -3,7 +3,6 @@ import thunk from 'redux-thunk'
 import authReducer from './slices/authSlice';
 import loginReducer from './slices/loginSlice';
 import createAccountReducer from './slices/createAccountSlice';
-import accountReducer from './slices/accountSlice';
 import cartReducer from './slices/cartSlice';
 import shopReducer from './slices/shopSlice';
 import itemDetailsReducer from './slices/itemDetailsSlice';
@@ -15,7 +14,6 @@ export default configureStore({
       auth: authReducer,
       login: loginReducer,
       createAccount: createAccountReducer,
-      account: accountReducer,
       cart: cartReducer,
       shop: shopReducer,
       itemDetails: itemDetailsReducer,
