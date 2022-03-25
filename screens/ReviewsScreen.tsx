@@ -10,10 +10,10 @@ import { Review } from '../types/Review';
 import { AuthUser } from '../types/AuthUser';
 import 'firebase/database';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, get, child } from "firebase/database";
 import firebaseConfig from '../service/Firebase';
 import { selectUser } from '../redux/slices/authSlice'
-import { setIsLoading, selectIsLoading, setReviews, selectReviews } from '../redux/slices/reviewsSlice'
+import { setIsLoading, selectIsLoading, setReviews, clearReviews, selectReviews } from '../redux/slices/reviewsSlice'
 import { useDispatch, useSelector } from 'react-redux';
 
 const { width } = Dimensions.get('screen')
@@ -35,39 +35,43 @@ export const ReviewsScreen = (props: IProps) => {
     const popAction = StackActions.pop(1);
 
     useEffect(() => {
+        dispatch(setIsLoading(true))
+        dispatch(clearReviews())
         getReviews();
     }, [])
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let KEY_INVENTORY = '/inventory/';
-    let ITEM_ID = String(selectedItem.id);
-    let KEY_REVIEWS = '/reviews';
-    let path = KEY_INVENTORY + ITEM_ID + KEY_REVIEWS
+    initializeApp(firebaseConfig);
 
     const getReviews = async () => {
-        let reviewRef = ref(db, path)
-        let reviewList: Review[] = [];
         dispatch(setIsLoading(true))
+        const KEY_INVENTORY = '/inventory/';
+        const ITEM_ID = String(selectedItem.id);
+        const KEY_REVIEWS = '/reviews';
+        const path = KEY_INVENTORY + ITEM_ID + KEY_REVIEWS
+        let reviewList: Review[] = [];
         try {
-            onValue(reviewRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data != null) {
-                    for (const key of Object.keys(data)) {
-                        const it: Review = data[key];
-                        let review: Review = {
-                            id: it.id,
-                            comment: it.comment,
-                            date: it.date,
-                            rating: it.rating,
+            const reviewRef = ref(getDatabase());
+            get(child(reviewRef, path)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    if (data != null) {
+                        for (const key of Object.keys(data)) {
+                            const it: Review = data[key];
+                            let review: Review = {
+                                id: it.id,
+                                comment: it.comment,
+                                date: it.date,
+                                rating: it.rating,
+                            }
+                            reviewList.push(review)
                         }
-                        reviewList.push(review)
                     }
+                    dispatch(setReviews(reviewList))
                 }
-                dispatch(setReviews(reviewList))
-                dispatch(setIsLoading(false))
+            }).catch((error) => {
+                console.error(error);
             });
+            dispatch(setIsLoading(false))
         } catch (e) {
             console.log(e);
             dispatch(setReviews(reviewList))
