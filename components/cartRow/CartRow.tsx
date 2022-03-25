@@ -11,14 +11,14 @@ const { width } = Dimensions.get('screen');
 
 interface IProps {
     item: CartItem;
-    removeFromCart: (id, quantity) => void;
+    removeItem: (id) => void;
     navigation: any;
 }
 
 const CartRow = (props: IProps) => {
     const { item } = props;
     const { navigation } = props;
-    const { removeFromCart } = props;
+    const { removeItem } = props;
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -35,7 +35,7 @@ const CartRow = (props: IProps) => {
             <View style={styles.innerContainer}>
                 <View style={styles.headerContainer} >
                     <Text style={styles.title}>{name}</Text>
-                    <TouchableOpacity style={styles.deleteButton} onPress={() => removeFromCart(item.id, item.quantity)}>
+                    <TouchableOpacity style={styles.deleteButton} onPress={() => removeItem(item)}>
                         <Image style={styles.deleteIcon} source={close} />
                     </TouchableOpacity>
                 </View>
