@@ -62,7 +62,7 @@ export const ItemDetailsScreen = (props: IProps) => {
         let KEY_USERS = FirebaseDatabase.usersKey;
         let KEY_CART = FirebaseDatabase.cartKey;
         try {
-            const cartItem: CartItem = {
+            var cartItem: CartItem = {
                 id: selectedItem.id,
                 title: selectedItem.title,
                 size: selectedSize,
@@ -74,7 +74,7 @@ export const ItemDetailsScreen = (props: IProps) => {
             let ITEM_ID = selectedItem.id
             let cartPath = KEY_USERS + USER_ID + KEY_CART + ITEM_ID
 
-            const updates = {};
+            var updates = {};
             updates[cartPath] = cartItem;
             ToastAndroid.show(`${selectedItem.title} Added To Cart`, ToastAndroid.SHORT)
             return update(ref(db), updates);
