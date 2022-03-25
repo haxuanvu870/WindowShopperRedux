@@ -80,7 +80,7 @@ export const LoginScreen = (props: IProps) => {
     }
 
     const onPasswordTextChange = (text) => {
-        if (text.length < 6) {
+        if (text.length < 5) {
             dispatch(setSignInButtonAsEnabled(false))
             dispatch(setEmailAsValidated(false))
         } else {
