@@ -1,17 +1,11 @@
 import React, { useEffect } from 'react';
-import { StatusBar, View, Image, Text, StyleSheet, Dimensions } from 'react-native';
+import { StatusBar, View, Image, Text, ToastAndroid, StyleSheet, Dimensions } from 'react-native';
 import logo from '../assets/ic_windowshopper_transparent.png'
 import RoundedButton from '../components/roundedButton/RoundedButton';
-import { Account } from '../types/Account';
 import { AuthUser } from '../types/AuthUser';
 import { getAuth, signOut } from "firebase/auth";
 import 'firebase/database';
-import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, onValue } from "firebase/database";
-import firebaseConfig from '../service/Firebase';
-import { FirebaseDatabase } from "../util/Constants";
-import { login, selectUser } from '../redux/slices/authSlice';
-import { setIsLoading, setAccount, selectAccount, selectIsLoading } from '../redux/slices/accountSlice';
+import { signOutUser, selectUser } from '../redux/slices/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 const { width } = Dimensions.get('screen')
@@ -23,52 +17,21 @@ interface IProps {
 
 export const AccountScreen = (props: IProps) => {
     const { navigation } = props;
-    const isLoading = useSelector(selectIsLoading)
-    const account: Account = useSelector(selectAccount)
     const user: AuthUser = useSelector(selectUser)
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (user) {
-            getAccountInfo();
-        } else {
+        if (!user) {
             navigation.navigate("Login")
         }
     }, [user])
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    const getAccountInfo = async () => {
-        dispatch(setIsLoading(true))
-        let KEY_USERS = FirebaseDatabase.usersKey;
-        let USER_ID = user.uid
-        let usersPath = KEY_USERS + USER_ID
-        let reviewRef = ref(db, usersPath)
+    const signOutOfApp = async () => {
         try {
-            onValue(reviewRef, (snapshot) => {
-                const data = snapshot.val();
-    
-                let account: Account = {
-                    username: data.username,
-                    email: data.email,
-                    password: data.password,
-                }
-                dispatch(setAccount(account))
-                dispatch(setIsLoading(false))
-            });
-        } catch (e) {
-            console.log(e);
-            dispatch(setAccount(null))
-            dispatch(setIsLoading(false))
-        }
-    }
-
-    const signOutUser = async () => {
-        try {
+            dispatch(signOutUser());
             await signOut(getAuth());
-            dispatch(setAccount(null))
-            navigation.navigate('Shop');
+            ToastAndroid.show("Successfully Signed Out", ToastAndroid.SHORT)
+            navigation.navigate('ShopStack');
         } catch (e) {
             console.log(e);
         }
@@ -76,7 +39,7 @@ export const AccountScreen = (props: IProps) => {
 
     return (
         <View style={styles.container}>
-            {!isLoading ? (
+            {user ? (
                 <>
                     <View style={styles.banner}>
                         <View style={styles.logoContainer}>
@@ -87,12 +50,12 @@ export const AccountScreen = (props: IProps) => {
                     <View style={styles.accountContainer}>
 
                         <View style={styles.accountDetailsContainer}>
-                            <Text style={styles.greeting} >Welcome back, {account.username}</Text>
-                            <Text style={styles.email} >{account.email}</Text>
+                            <Text style={styles.greeting} >Welcome back, {user.username}</Text>
+                            <Text style={styles.email} >{user.email}</Text>
                         </View>
 
                         <View style={styles.buttonContainer} >
-                            <RoundedButton enabled={true} buttonText='Sign Out' buttonTextColor='white' buttonColor='black' onPress={() => signOutUser()} />
+                            <RoundedButton enabled={true} buttonText='Sign Out' buttonTextColor='white' buttonColor='black' onPress={() => signOutOfApp()} />
                         </View>
                     </View>
                 </>
