@@ -15,7 +15,10 @@ import { FirebaseDatabase } from '../util/Constants';
 import firebaseConfig from '../service/Firebase';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, update } from "firebase/database";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { login } from '../redux/slices/authSlice';
+import { AuthUser } from '../types/AuthUser';
+
 
 const { width } = Dimensions.get('screen')
 
@@ -101,12 +104,23 @@ export const CreateAccountScreen = (props: IProps) => {
                             console.log('Error encountered while saving account info to Firebase: ', error);
                         })
                     ToastAndroid.show("Successfully Created Account", ToastAndroid.SHORT)
+                    const authUser: AuthUser = {
+                        isAuthenticated: true,
+                        email: email,
+                        uid: auth.currentUser.uid,
+                        username: username
+                    };
+                    dispatch(login(authUser))
                     navigation.navigate('Shop');
                 })
                 .catch(error => {
                     console.log('Failed while creating new account: ', error);
                     ToastAndroid.show("Failed To Create Account", ToastAndroid.SHORT)
                 });
+            await updateProfile(auth.currentUser, { displayName: username }).catch(
+                (err) => console.log(err)
+            );
+
 
         } catch (e) {
             console.log(e);
