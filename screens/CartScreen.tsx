@@ -4,14 +4,12 @@ import CartRow from '../components/cartRow/CartRow';
 import { CartItem } from '../types/CartItem';
 import { AuthUser } from '../types/AuthUser';
 import 'firebase/database';
-import { initializeApp } from 'firebase/app';
-import { getDatabase, update, ref, onValue } from "firebase/database";
-import firebaseConfig from '../service/Firebase';
+import { getDatabase, ref, set, get, child } from "firebase/database";
 import { FirebaseDatabase } from "../util/Constants";
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    selectIsLoading, selectCart, selectTotalItems, setIsLoading,
-    setCart, selectTotalPrice, setTotalItems, setTotalPrice
+    selectIsLoading, selectCart, setIsLoading,
+    setCart, removeFromCart
 } from '../redux/slices/cartSlice';
 import { selectUser } from '../redux/slices/authSlice';
 
@@ -27,68 +25,85 @@ export const CartScreen = (props: IProps) => {
 
     const isLoading = useSelector(selectIsLoading)
     const cartItems = useSelector(selectCart)
-    const totalItems = useSelector(selectTotalItems)
-    const totalPrice = useSelector(selectTotalPrice)
     const user: AuthUser = useSelector(selectUser)
     const dispatch = useDispatch();
 
+    const KEY_USERS = FirebaseDatabase.usersKey;
+    const KEY_CART = FirebaseDatabase.cartKey;
+
     useEffect(() => {
         if (user) {
+            dispatch(setIsLoading(true))
             getCartItems();
-            dispatch(setIsLoading(false))
         } else {
             navigation.navigate("Login")
         }
     }, [user])
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
     const getCartItems = async () => {
         dispatch(setIsLoading(true))
         let cartList: CartItem[] = [];
-        var totalPrice: number = 0.00;
-        var totalItems: number = 0;
         try {
-            let KEY_USERS = FirebaseDatabase.usersKey;
-            let USER_ID = user.uid;
-            let KEY_CART = FirebaseDatabase.cartKey;
-            let cartPath = KEY_USERS + USER_ID + KEY_CART
-            let cartRef = ref(db, cartPath)
+            const USER_ID = user.uid;
+            const cartPath = KEY_USERS + USER_ID + KEY_CART
 
-            onValue(cartRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data != null) {
-                    for (const key of Object.keys(data)) {
-                        const it: CartItem = data[key];
+            const cartRef = ref(getDatabase());
+            get(child(cartRef, cartPath)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    if (data != null) {
+                        for (const key of Object.keys(data)) {
+                            const it: CartItem = data[key];
 
-                        let item: CartItem = {
-                            id: it.id,
-                            title: it.title,
-                            size: it.size,
-                            price: it.price,
-                            quantity: it.quantity,
-                            thumbnail: it.thumbnail,
+                            const item: CartItem = {
+                                id: it.id,
+                                title: it.title,
+                                size: it.size,
+                                price: it.price,
+                                quantity: it.quantity,
+                                thumbnail: it.thumbnail,
+                            }
+                            cartList.push(item)
                         }
-                        totalPrice += item.price * item.quantity
-                        totalItems += item.quantity
-                        cartList.push(item)
                     }
+                    dispatch(setCart(cartList))
+
                 }
-                dispatch(setCart(cartList))
-                dispatch(setTotalPrice(String(totalPrice.toFixed(2))))
-                dispatch(setTotalItems(totalItems))
-                dispatch(setIsLoading(false))
+            }).catch((error) => {
+                console.error(error);
             });
+            dispatch(setIsLoading(false))
         } catch (e) {
             console.log(e);
-            dispatch(setCart(cartList))
-            dispatch(setTotalPrice(String(totalPrice.toFixed(2))))
             dispatch(setCart(cartList))
             dispatch(setIsLoading(false))
         }
     }
-    
+
+    const removeItem = async (item) => {
+        dispatch(removeFromCart(item.id))
+        updateCart(item)
+    }
+
+    const updateCart = async (item) => {
+        try {
+            const USER_ID = user.uid;
+            const ITEM_ID = item.id;
+            const cartPath = KEY_USERS + USER_ID + KEY_CART
+
+            const db = getDatabase();
+            set(ref(db, cartPath + ITEM_ID),
+                null
+            );
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    let totalPrice = cartItems.map((item) => item.price).reduce((prev, curr) => prev + curr, 0).toFixed(2);
+    let priceString = String(totalPrice);
+    let totalItems = cartItems.map((item) => item.quantity).reduce((prev, curr) => prev + curr, 0);
+
     return (
         <View style={styles.container}>
             {!isLoading ? (
@@ -97,13 +112,13 @@ export const CartScreen = (props: IProps) => {
                         {cartItems.length > 0 &&
                             <FlatList
                                 data={cartItems}
-                                renderItem={({ item, index }) => <CartRow item={item} navigation={navigation} removeFromCart={null} />}
+                                renderItem={({ item, index }) => <CartRow item={item} navigation={navigation} removeItem={removeItem} />}
                             />
                         }
                     </View>
                     <View style={styles.checkoutContainer}>
                         <Text style={styles.checkOutText}>Items: {totalItems}</Text>
-                        <Text style={styles.checkOutText}>Amount: ${totalPrice}</Text>
+                        <Text style={styles.checkOutText}>Amount: ${priceString}</Text>
 
                         <View style={styles.checkOutButtonContainer} >
                             <TouchableOpacity style={styles.button} onPress={null} >
