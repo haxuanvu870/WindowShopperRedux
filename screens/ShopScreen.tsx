@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar, View, FlatList, StyleSheet, BackHandler } from 'react-native';
 import { Item } from '../types/Item';
 import ItemRow from '../components/itemRow/ItemRow'
 import AnimationView from '../components/animationView/AnimationView';
 import 'firebase/database';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, get, child } from "firebase/database";
 import { FirebaseDatabase } from '../util/Constants';
 import firebaseConfig from '../service/Firebase';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,19 +18,14 @@ interface IProps {
 
 export const ShopScreen = (props: IProps) => {
     const { navigation } = props;
-
-    useEffect(() => {
-        getClothes();
-    }, [])
-
     const isLoading = useSelector(selectIsLoading)
     const items = useSelector(selectItems)
     const dispatch = useDispatch();
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    initializeApp(firebaseConfig);
 
     useEffect(() => {
+        dispatch(setIsLoading(true))
+        getClothes();
         const onBackPress = () => {
             BackHandler.exitApp()
             return true
@@ -40,27 +35,33 @@ export const ShopScreen = (props: IProps) => {
     }, [])
 
     const getClothes = async () => {
-        const inventoryRef = ref(db, FirebaseDatabase.inventoryKey);
-        let itemList: Item[] = [];
         dispatch(setIsLoading(true))
+        let itemList: Item[] = [];
         try {
-            onValue(inventoryRef, (snapshot) => {
-                const data = snapshot.val();
-                for (const key of Object.keys(data)) {
-                    const it: Item = data[key];
+            const inventoryRef = ref(getDatabase());
+            get(child(inventoryRef, FirebaseDatabase.inventoryKey)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    if (data != null) {
+                        for (const key of Object.keys(data)) {
+                            const it: Item = data[key];
 
-                    let item: Item = {
-                        id: it.id,
-                        title: it.title,
-                        summary: it.summary,
-                        image: it.image,
-                        price: it.price,
+                            let item: Item = {
+                                id: it.id,
+                                title: it.title,
+                                summary: it.summary,
+                                image: it.image,
+                                price: it.price,
+                            }
+                            itemList.push(item)
+                        }
                     }
-                    itemList.push(item)
+                    dispatch(setItems(itemList))
                 }
-                dispatch(setItems(itemList))
-                dispatch(setIsLoading(false))
+            }).catch((error) => {
+                console.error(error);
             });
+            dispatch(setIsLoading(false))
         } catch (e) {
             console.log(e);
             dispatch(setItems(itemList))
