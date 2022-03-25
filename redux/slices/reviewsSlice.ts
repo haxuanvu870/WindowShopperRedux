@@ -17,10 +17,11 @@ export const reviewsSlice = createSlice({
     reducers: {
         setIsLoading: (state, {payload}) => { state.isLoading = payload },
         setReviews: (state, {payload}) => { state.reviews = payload },
+        clearReviews: (state) => { state.reviews = [] },
     },
 })
 
-export const { setIsLoading, setReviews } = reviewsSlice.actions
+export const { setIsLoading, setReviews, clearReviews } = reviewsSlice.actions
 
 export const selectIsLoading = (state) => state.reviews.isLoading
 export const selectReviews = (state) => state.reviews.reviews
