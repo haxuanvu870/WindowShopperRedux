@@ -6,7 +6,6 @@ import BackButton from '../components/backButton/BackButton';
 import RoundedButton from '../components/roundedButton/RoundedButton';
 import PriceBubble from '../components/priceBubble/PriceBubble';
 import { Item } from '../types/Item';
-import { CartItem } from '../types/CartItem';
 import { AuthUser } from '../types/AuthUser';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -15,9 +14,7 @@ import {
 } from '../redux/slices/itemDetailsSlice'
 import { selectUser } from '../redux/slices/authSlice'
 import { FirebaseDatabase } from '../util/Constants';
-import firebaseConfig from '../service/Firebase';
-import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, update } from "firebase/database";
+import { getDatabase, ref, set } from "firebase/database";
 
 const { width } = Dimensions.get('screen')
 
@@ -36,12 +33,12 @@ export const ItemDetailsScreen = (props: IProps) => {
     const dispatch = useDispatch();
     const popAction = StackActions.pop(1);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const KEY_USERS = FirebaseDatabase.usersKey;
+    const KEY_CART = FirebaseDatabase.cartKey;
 
     useEffect(() => {
-            dispatch(setSelectedSize('S'))
-            dispatch(setSelectedQuantity('1'))
+        dispatch(setSelectedSize('S'))
+        dispatch(setSelectedQuantity('1'))
         const onBackPress = () => {
             navigation.dispatch(popAction)
             return true
@@ -59,29 +56,26 @@ export const ItemDetailsScreen = (props: IProps) => {
     }
 
     const addItemToCart = async (selectedItem, selectedSize, selectedQuantity) => {
-        let KEY_USERS = FirebaseDatabase.usersKey;
-        let KEY_CART = FirebaseDatabase.cartKey;
         try {
-            var cartItem: CartItem = {
+            const USER_ID = user.uid
+            const ITEM_ID = selectedItem.id
+            const cartPath = KEY_USERS + USER_ID + KEY_CART
+
+            const db = getDatabase();
+            set(ref(db, cartPath + ITEM_ID), {
                 id: selectedItem.id,
                 title: selectedItem.title,
                 size: selectedSize,
                 price: selectedItem.price,
                 thumbnail: selectedItem.image,
                 quantity: Number(selectedQuantity)
-            };
-            let USER_ID = user.uid
-            let ITEM_ID = selectedItem.id
-            let cartPath = KEY_USERS + USER_ID + KEY_CART + ITEM_ID
-
-            var updates = {};
-            updates[cartPath] = cartItem;
+            });
             ToastAndroid.show(`${selectedItem.title} Added To Cart`, ToastAndroid.SHORT)
-            return update(ref(db), updates);
         } catch (e) {
             console.log(e);
         }
     }
+
     let priceString = '$' + String(selectedItem.price)
     let reviewText: string = 'Reviews'
 
