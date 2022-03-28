@@ -67,7 +67,6 @@ export const CartScreen = (props: IProps) => {
                         }
                     }
                     dispatch(setCart(cartList))
-
                 }
             }).catch((error) => {
                 console.error(error);
@@ -100,7 +99,7 @@ export const CartScreen = (props: IProps) => {
         }
     }
 
-    let totalPrice = cartItems.map((item) => item.price).reduce((prev, curr) => prev + curr, 0).toFixed(2);
+    let totalPrice = cartItems.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0).toFixed(2);
     let priceString = String(totalPrice);
     let totalItems = cartItems.map((item) => item.quantity).reduce((prev, curr) => prev + curr, 0);
 
