@@ -27,47 +27,17 @@ export const SubmitReviewScreen = (props: IProps) => {
     const { navigation } = props;
     const { selectedItem } = props.route.params
     const [inputText, setInputText] = useState('')
-
-    const popAction = StackActions.pop(1);
-    const popBackToDetails = StackActions.pop(2);
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    const dispatch = useDispatch();
-
     const rating = useSelector(selectRating)
     const isButtonEnabled = useSelector(selectIsSubmitButtonEnabled)
+    const popAction = StackActions.pop(1);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dispatch = useDispatch();
 
-    const submitReview = () => {
-        const KEY_INVENTORY = "/inventory/"
-        let ITEM_ID = selectedItem.id.toString();
-        let KEY_REVIEWS = '/reviews';
-        const path = KEY_INVENTORY + ITEM_ID + KEY_REVIEWS
-
-        var currentDate = new Date().toLocaleDateString('en-US');
-
-        const review: Review = {
-            id: ITEM_ID,
-            comment: inputText,
-            date: currentDate,
-            rating: '40.00',
-        };
-
-        const newReviewKey = push(child(ref(db), path)).key;
-
-        const updates = {};
-        updates[path + '/' + newReviewKey] = review;
-
-        return update(ref(db), updates);
-    }
-
-    const onInputTextChange = (text) => { 
+    const onInputTextChange = (text) => {
         if (text.length < 1) {
-            console.log("A")
             dispatch(setButtonAsEnabled(false))
         } else {
-            console.log("B")
             dispatch(setButtonAsEnabled(true))
         }
         setInputText(text)
@@ -75,6 +45,33 @@ export const SubmitReviewScreen = (props: IProps) => {
 
     const ratingCompleted = (rating) => {
         dispatch(setRating(rating))
+    }
+
+    const submitReview = async (selectedItem, inputText, rating) => {
+        try {
+            const KEY_INVENTORY = "/inventory/"
+            let ITEM_ID = selectedItem.id.toString();
+            let KEY_REVIEWS = '/reviews';
+            const path = KEY_INVENTORY + ITEM_ID + KEY_REVIEWS
+
+            var currentDate = new Date().toLocaleDateString('en-US');
+
+            const review: Review = {
+                id: ITEM_ID,
+                comment: inputText,
+                date: currentDate,
+                rating: rating,
+            };
+    
+            const newReviewKey = push(child(ref(db), path)).key;
+    
+            const updates = {};
+            updates[path + '/' + newReviewKey] = review;
+    
+            return update(ref(db), updates);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     return (
@@ -99,7 +96,7 @@ export const SubmitReviewScreen = (props: IProps) => {
                     <Text style={styles.characterCount}>{inputText.length}/125</Text>
                 </View>
                 <TextInput style={styles.textInput} placeholder='What are your thoughts?' onChangeText={(text) => onInputTextChange(text)} />
-                <RoundedButton enabled={isButtonEnabled} buttonText='Submit' buttonTextColor='white' buttonColor='black' onPress={() => submitReview } />
+                <RoundedButton enabled={isButtonEnabled} buttonText='Submit' buttonTextColor='white' buttonColor='black' onPress={() => submitReview(selectedItem, inputText, rating)} />
             </View>
         </View>
     );
