@@ -58,7 +58,7 @@ export const ReviewsScreen = (props: IProps) => {
                         for (const key of Object.keys(data)) {
                             const it: Review = data[key];
                             let review: Review = {
-                                id: it.id,
+                                id: key,
                                 comment: it.comment,
                                 date: it.date,
                                 rating: it.rating,
@@ -91,7 +91,7 @@ export const ReviewsScreen = (props: IProps) => {
         <View style={styles.container}>
             {!isLoading ? (
                 <>
-                    <View style={styles.searchBarContainer}  >
+                    <View style={styles.toolBarContainer}  >
                         <BackButton backArrowColor='black' onPress={() => navigation.dispatch(popAction)} />
                         <TouchableOpacity style={styles.addButton} onPress={user ? () => navigation.navigate('SubmitReview', { selectedItem: selectedItem }) : null}>
                             <Image style={styles.addIcon} source={user ? add : null} />
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 
-    searchBarContainer: {
+    toolBarContainer: {
         flexDirection: 'row',
         display: 'flex',
         width: width,
