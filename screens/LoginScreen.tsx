@@ -24,7 +24,6 @@ export const LoginScreen = (props: IProps) => {
     const { navigation } = props;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
     const isPasswordVisible = useSelector(selectPasswordVisibility)
     const isEmailValidated = useSelector(selectEmailIsValidated)
     const isPasswordValidated = useSelector(selectPaswordIsValidated)
