@@ -20,19 +20,6 @@ interface IProps {
     route: any;
 }
 
-/**
- * @param {{ 
- * navigation: any,
- * route: any,
- * }} props 
- * @returns
- */
-
-/**
- * CartScreen signed in users can use this screen to view their cart items.
- * This screen is passed React's navigation & route as props for navigating between screens 
- * and passing data.
- */
 export const CartScreen = (props: IProps) => {
     const { navigation } = props;
 
@@ -53,7 +40,6 @@ export const CartScreen = (props: IProps) => {
         }
     }, [user])
 
-    //Fetches cart items for signed user
     const getCartItems = async () => {
         dispatch(setIsLoading(true))
         let cartList: CartItem[] = [];
@@ -93,7 +79,6 @@ export const CartScreen = (props: IProps) => {
         }
     }
 
-    //Removes item from cart in Firebase and Redux state
     const removeItem = async (item) => {
         dispatch(removeFromCart(item.id))
         updateCart(item)
@@ -114,12 +99,8 @@ export const CartScreen = (props: IProps) => {
         }
     }
 
-    //totalPrice for the cart items
     let totalPrice = cartItems.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0).toFixed(2);
-    //totalPrice converted as a string for use
     let priceString = String(totalPrice);
-
-    //# of totalItems of cart items
     let totalItems = cartItems.map((item) => item.quantity).reduce((prev, curr) => prev + curr, 0);
 
     return (
