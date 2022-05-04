@@ -9,6 +9,18 @@ type IProps = {
     option: number;
 }
 
+/**
+ * @param {{ 
+ * option: number,
+ * }} props 
+ * @returns
+ */
+
+/**
+ * AnimationView creates a canvas for swapping animations.
+ * This component receives an option prop as a number for selecting animations.
+ * Currently, only one animation is available, but this component is designed include more options.
+ */
 const AnimationView = (props: IProps) => {
     const {option} = props;
     return (
