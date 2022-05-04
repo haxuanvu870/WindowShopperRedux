@@ -12,23 +12,12 @@ const { width } = Dimensions.get('screen');
 interface IProps {
     item: CartItem;
     removeItem: (id) => void;
+    navigation: any;
 }
 
-/**
- * @param {{ 
- * item: CartItem;
- * removeItem: (id) => void,
- * }} props 
- * @returns
- */
-
-/**
- * CartRow creates a row component for displaying a cartItem from a user's cart.
- * This component is passed a removeItem(id) function as a prop for removing/deleting 
- * item from the user's cart.
- */
 const CartRow = (props: IProps) => {
     const { item } = props;
+    const { navigation } = props;
     const { removeItem } = props;
 
     const app = initializeApp(firebaseConfig);
