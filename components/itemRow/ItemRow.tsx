@@ -7,19 +7,6 @@ interface IProps {
     navigation: any;
 }
 
-/**
- * @param {{ 
- * item: Item,
- * navigation: any;
- * }} props 
- * @returns
- */
-
-/**
- * ItemRow creates a row component for displaying a retail item in ShopScreen.
- * This screen is passed React's navigation & route as props for navigating between screens 
- * and passing data.
- */
 const ItemRow = (props: IProps) => {
     const { item } = props;
     const { navigation } = props;
