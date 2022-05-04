@@ -12,21 +12,6 @@ interface IProps {
     onPress: () => void;
 }
 
-/**
- * @param {{ 
- * buttonText: string,
- * buttonTextColor: string,
- * buttonColor: string,
- * enabled: boolean,
- * onPress: () => void
- * }} props 
- * @returns
- */
-
-/**
- * RoundedButton creates a rounded button component.
- * This component receives props for modifying the appearance of the component.
- */
 export const RoundedButton = (props: IProps) => {
     const { buttonText, buttonTextColor, buttonColor, enabled, onPress } = props;
 
