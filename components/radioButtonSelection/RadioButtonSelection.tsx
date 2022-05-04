@@ -12,21 +12,6 @@ interface IProps {
     selectedQuantity: string
 }
 
-/**
- * @param {{ 
- * contentType: string,
- * selectedSizeHandler: Dispatch<SetStateAction<string>>,
- * selectedQuantityHandler: Dispatch<SetStateAction<string>>
- * selectedSize: string,
- * selectedQuantity: string
- * }} props 
- * @returns
- */
-
-/**
- * RadioBubbleSelection is a container for the RadioBubble component.This is used in
- * ItemDetailsScreen to select the size or quantity of a retail item.
- */
 const RadioBubbleSelection = (props: IProps) => {
     const { contentType, selectedSizeHandler, selectedQuantityHandler, selectedSize, selectedQuantity } = props;
 
