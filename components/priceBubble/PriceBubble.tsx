@@ -6,6 +6,17 @@ interface IProps {
     price: string;
 }
 
+/**
+ * @param {{ 
+ * price: string,
+ * }} props 
+ * @returns
+ */
+
+/**
+ * PriceBubble is a component for displaying the price for a retail item in bubble.
+ * This component is passed in the price of an item as a string prop.
+ */
 const PriceBubble = (props: IProps) => {
     const { price } = props;
 

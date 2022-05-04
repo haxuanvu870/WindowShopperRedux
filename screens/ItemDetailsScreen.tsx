@@ -24,6 +24,20 @@ type IProps = {
     selectedItem?: Item;
 }
 
+/**
+ * @param {{ 
+ * navigation: any,
+ * route: any,
+ * selectedItem: Item
+ * }} props 
+ * @returns
+ */
+
+/**
+ * ItemDetailsScreen displays the selected retail item's details, sizes, price & reviews.
+ * This screen is passed React's navigation & route as props for navigating between screens 
+ * and passing data. This screen is also passed the selectedItem from ShopScreen 
+ */
 export const ItemDetailsScreen = (props: IProps) => {
     const { navigation } = props;
     const { selectedItem } = props.route.params
@@ -47,14 +61,17 @@ export const ItemDetailsScreen = (props: IProps) => {
         return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress)
     }, [])
 
+    //Handles when a size button is selected
     const selectedSizeHandler = (value) => {
         dispatch(setSelectedSize(value))
     }
 
+    //Handles when a quantity button is selected
     const selectedQuantityHandler = (value) => {
         dispatch(setSelectedQuantity(value))
     }
 
+    //Post selectedItem to signed in user's cart
     const addItemToCart = async (selectedItem, selectedSize, selectedQuantity) => {
         try {
             const USER_ID = user.uid
@@ -76,6 +93,7 @@ export const ItemDetailsScreen = (props: IProps) => {
         }
     }
 
+    //Converts selectedItem's price to String
     let priceString = '$' + String(selectedItem.price)
     let reviewText: string = 'Reviews'
 

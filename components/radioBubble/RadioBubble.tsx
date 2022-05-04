@@ -8,9 +8,26 @@ interface IProps {
     selectedItem: string;
 }
 
+/**
+ * @param {{ 
+ * content: string,
+ * selectedHandler: Dispatch<SetStateAction<string>>,
+ * selectedItem: string
+ * }} props 
+ * @returns
+ */
+
+/**
+ * RadioBubble is a component to be used as a radio button. This is used in
+ * ItemDetailsScreen to select the size or quantity of a retail item.
+ * This component is passed content as string for specifying the text in the buttons.
+ * Additionally, a handler for updating the state is passed for updating the state.
+ * selectedItem is passed as a string to reference the currently selected item
+ */
 const RadioBubble = (props: IProps) => {
     const { content, selectedHandler, selectedItem } = props;
 
+    //Uses the selectedHandler prop to update the state associated to handler
     const onSelected = () => {
         selectedHandler(content)
     }

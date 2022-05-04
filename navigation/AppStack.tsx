@@ -13,6 +13,7 @@ import { Image } from 'react-native';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+//Account Tab NavigationStack
 const AccountStack = ({ navigation }) => (
   <Stack.Navigator screenOptions={{
     headerShown: false
@@ -30,6 +31,7 @@ const AccountStack = ({ navigation }) => (
   </Stack.Navigator>
 );
 
+//Shop Tab NavigationStack
 const ShopStack = ({ navigation }) => (
   <Stack.Navigator screenOptions={{
     headerShown: false
@@ -68,6 +70,7 @@ const ShopStack = ({ navigation }) => (
   </Stack.Navigator>
 );
 
+//Cart Tab NavigationStack
 const CartStack = ({ navigation }) => (
   <Stack.Navigator >
     <Stack.Screen

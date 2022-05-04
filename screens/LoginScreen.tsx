@@ -20,6 +20,20 @@ interface IProps {
     route: any;
 }
 
+/**
+ * @param {{ 
+ * navigation: any,
+ * route: any,
+ * }} props 
+ * @returns
+ */
+
+/**
+ * LoginScreen existing users can use this screen to log back their accounts. Additionally,
+ * new users can be directed to CreateAccountScreen to create an account.
+ * This screen is passed React's navigation & route as props for navigating between screens 
+ * and passing data.
+ */
 export const LoginScreen = (props: IProps) => {
     const { navigation } = props;
     const [email, setEmail] = useState('');
@@ -40,6 +54,7 @@ export const LoginScreen = (props: IProps) => {
         return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress)
     }, [])
 
+    //Signs user in
     const signIn = async (email, password) => {
         const auth = getAuth();
         await signInWithEmailAndPassword(auth, email, password)
@@ -64,6 +79,7 @@ export const LoginScreen = (props: IProps) => {
             });
     }
 
+    //Validates email address on text change
     const onEmailTextChange = (text) => {
         let emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
         if (emailReg.test(text)) {
@@ -78,6 +94,7 @@ export const LoginScreen = (props: IProps) => {
         setEmail(text)
     }
 
+    //Validates password on text change
     const onPasswordTextChange = (text) => {
         if (text.length < 5) {
             dispatch(setSignInButtonAsEnabled(false))

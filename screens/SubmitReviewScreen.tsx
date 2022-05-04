@@ -23,6 +23,20 @@ interface IProps {
     selectedItem?: Item;
 }
 
+/**
+ * @param {{ 
+ * navigation: any,
+ * route: any,
+ * selectedItem: Item
+ * }} props 
+ * @returns
+ */
+
+/**
+ * SubmitReviewScreen allows the user if signed in, to submit reviews on the selectedItem.
+ * This screen is passed React's navigation & route as props for navigating between screens 
+ * and passing data. This screen is also passed the selectedItem from ShopScreen 
+ */
 export const SubmitReviewScreen = (props: IProps) => {
     const { navigation } = props;
     const { selectedItem } = props.route.params
@@ -34,6 +48,7 @@ export const SubmitReviewScreen = (props: IProps) => {
     const db = getDatabase(app);
     const dispatch = useDispatch();
 
+    //Validates text input on text change
     const onInputTextChange = (text) => {
         if (text.length < 1) {
             dispatch(setButtonAsEnabled(false))
@@ -43,10 +58,12 @@ export const SubmitReviewScreen = (props: IProps) => {
         setInputText(text)
     }
 
+    //Handles the ratingValue changes
     const ratingCompleted = (rating) => {
         dispatch(setRating(rating))
     }
 
+    //Posts reviews for selectedItem to Firebase Database
     const submitReview = async (selectedItem, inputText, rating) => {
         try {
             const KEY_INVENTORY = "/inventory/"

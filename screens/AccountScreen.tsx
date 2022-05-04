@@ -15,6 +15,18 @@ interface IProps {
     route: any;
 }
 
+/**
+ * @param {{ 
+ * navigation: any,
+ * route: any
+ * }} props 
+ * @returns
+ */
+
+/**
+ * AccountScreen displays the user's information. User can also sign out of application here.
+ * This screen is passed React's navigation & route as props for navigating between screens and passing data.
+ */
 export const AccountScreen = (props: IProps) => {
     const { navigation } = props;
     const user: AuthUser = useSelector(selectUser)
@@ -26,6 +38,7 @@ export const AccountScreen = (props: IProps) => {
         }
     }, [user])
 
+    //Signs out user
     const signOutOfApp = async () => {
         try {
             dispatch(signOutUser());

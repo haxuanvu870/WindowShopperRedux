@@ -9,6 +9,17 @@ interface IProps {
     review: Review;
 }
 
+/**
+ * @param {{ 
+ * review: Review,
+ * }} props 
+ * @returns
+ */
+
+/**
+ * ReviewRow creates a row component for displaying reviews for a selectedItem.
+ * This component receives a review object as a prop to populate the data in the component.
+ */
 const ReviewRow = (props: IProps) => {
     const { review } = props;
 

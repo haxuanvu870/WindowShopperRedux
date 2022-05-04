@@ -24,6 +24,20 @@ interface IProps {
     selectedItem?: Item;
 }
 
+/**
+ * @param {{ 
+ * navigation: any,
+ * route: any,
+ * selectedItem: Item
+ * }} props 
+ * @returns
+ */
+
+/**
+ * ReviewsScreen displays the selected retail item's user submitted reviews.
+ * This screen is passed React's navigation & route as props for navigating between screens 
+ * and passing data. This screen is also passed the selectedItem from ItemDetailsScreen
+ */
 export const ReviewsScreen = (props: IProps) => {
     const { navigation } = props;
     const { selectedItem } = props.route.params
@@ -42,6 +56,7 @@ export const ReviewsScreen = (props: IProps) => {
 
     initializeApp(firebaseConfig);
 
+    //Fetches reviews for selectedItem from Firebase Database
     const getReviews = async () => {
         dispatch(setIsLoading(true))
         const KEY_INVENTORY = '/inventory/';
